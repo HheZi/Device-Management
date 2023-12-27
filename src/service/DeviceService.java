@@ -1,6 +1,5 @@
 package service;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,7 +22,8 @@ public class DeviceService implements DAO<Device> {
 	@Override
 	public List<Device> getAll() {
 		final String SQL = """
-				select * from manager.device order by id;
+				select id, name, quantity, price, imported_date, supplier_id 
+				from manager.device order by id;
 				""";
 		List<Device> list = new ArrayList<Device>();
 		
@@ -61,7 +61,8 @@ public class DeviceService implements DAO<Device> {
 	
 	public boolean isDeviceExisted(String id) throws SQLException {
 		final String SQL = """
-				select * from manager.device where id = ?
+				select id, name, quantity, price, imported_date, supplier_id 
+				from manager.device where id = ?
 				""";
 		try(Connection c = ConnectionManager.getConnection();
 			PreparedStatement stmt = c.prepareStatement(SQL);){
@@ -95,7 +96,7 @@ public class DeviceService implements DAO<Device> {
 	}
 
 	@Override
-	public void delete(Device device) {
+	public int delete(Device device) {
 		final String SQL = """
 				delete from manager.device 
 				where id = ? and name = ? and quantity = ? and price = ?  
@@ -109,10 +110,11 @@ public class DeviceService implements DAO<Device> {
 				stmt.setFloat(4, device.getPrice());
 				stmt.setDate(5, device.getImportedDate());
 				stmt.setString(6, device.getSupplier().getId());
-				stmt.executeUpdate();
+				return stmt.executeUpdate();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+		return 2;
 	}
 
 }

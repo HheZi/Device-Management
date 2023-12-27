@@ -19,11 +19,13 @@ public class SupplierService implements DAO<Supplier>{
 	public Optional<Supplier> get(String id) {
 		return Optional.empty();
 	}
+	
 	public static Supplier findById(String id, Connection c) {
 		final String SQL = """
-				select * from manager.supplier where id = ?
+				select id, name, address 
+				from manager.supplier where id = ?
 				""";
-		Supplier sup = null;;
+		Supplier sup = null;
 		try(PreparedStatement stmt = c.prepareStatement(SQL);){
 			stmt.setString(1, id);
 			try(ResultSet res = stmt.executeQuery();){
@@ -36,11 +38,13 @@ public class SupplierService implements DAO<Supplier>{
 		}
 		return sup;
 	}
+	
 	public Supplier findById(String id) {
 		final String SQL = """
-				select * from manager.supplier where id = ?
+				select id, name, address 
+				from manager.supplier where id = ?
 				""";
-		Supplier sup = null;;
+		Supplier sup = null;
 		try(Connection c = ConnectionManager.getConnection();
 			PreparedStatement stmt = c.prepareStatement(SQL);){
 			stmt.setString(1, id);
@@ -57,7 +61,8 @@ public class SupplierService implements DAO<Supplier>{
 	
 	public boolean isSupplierExisted(String id) throws SQLException {
 		final String SQL = """
-				select * from manager.supplier where id = ?
+				select id, name, address 
+				from manager.supplier where id = ?
 				""";
 		try(Connection c = ConnectionManager.getConnection();
 			PreparedStatement stmt = c.prepareStatement(SQL);){
@@ -67,10 +72,12 @@ public class SupplierService implements DAO<Supplier>{
 			}
 		} 
 	}
+	
 	@Override
 	public List<Supplier> getAll() {
 		final String SQL = """
-				select * from manager.supplier order by id
+				select id, name, address
+				from manager.supplier order by id
 				""";
 		List<Supplier> list = new ArrayList<Supplier>();
 		
@@ -139,7 +146,7 @@ public class SupplierService implements DAO<Supplier>{
 	}
 
 	@Override
-	public void delete(Supplier supplier) {
+	public int delete(Supplier supplier) {
 		final String SQL = """
 				delete from manager.supplier
 				where id = ? and name = ? and address = ?
@@ -149,9 +156,9 @@ public class SupplierService implements DAO<Supplier>{
 			stmt.setString(1, supplier.getId());
 			stmt.setString(2, supplier.getName());
 			stmt.setString(3, supplier.getAddress());
-			stmt.executeUpdate();
+			return stmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			return 2;
 		}
 	}
 

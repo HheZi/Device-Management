@@ -99,9 +99,11 @@ public class MainProgram {
 		frmDeviceManagment.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBackground(new Color(255, 255, 255));
 		frmDeviceManagment.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
 		JPanel panel = new JPanel();
+		panel.setForeground(new Color(255, 255, 255));
 		tabbedPane.addTab("Devices", null, panel, null);
 		panel.setLayout(null);
 		
@@ -377,10 +379,14 @@ public class MainProgram {
 			public void actionPerformed(ActionEvent e) {
 				int choiceDel = JOptionPane.showConfirmDialog(frmDeviceManagment, "Are you sure you want to delete?", "Delete?", JOptionPane.YES_NO_OPTION);
 				if(choiceDel == JOptionPane.YES_OPTION) {
-					supplierService.delete(getSupplier());
-					supplierModel.setData(supplierService.getAll());
-					setEmptyTextToTextFieldsOfSupplier();
-					updateComboBoxValues();
+					if(supplierService.delete(getSupplier()) == 2) {
+						JOptionPane.showMessageDialog(frmDeviceManagment, "This supplier tied to one of the devices", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else {
+						supplierModel.setData(supplierService.getAll());
+						setEmptyTextToTextFieldsOfSupplier();
+						updateComboBoxValues();
+					}
 				}
 			}
 		});
