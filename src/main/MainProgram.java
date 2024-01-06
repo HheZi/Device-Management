@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import java.awt.Color;
@@ -77,8 +78,8 @@ public class MainProgram {
 	 * Create the application.
 	 */
 	public MainProgram() {
-		deviceService = new DeviceService();
-		supplierService = new SupplierService();
+		deviceService = DeviceService.getInstance();
+		supplierService = SupplierService.getInstance();
 		initialize();
 		deviceModel = new DeviceTableModel(modelDeviceTableModel); 
 		supplierModel = new SupplierTableModel(modelSupplierTableModel);
@@ -412,7 +413,7 @@ public class MainProgram {
 		int quantity = Integer.parseInt(textFieldForDeviceQuantity.getText().trim());
 		float price = Float.parseFloat(textFieldForDevicePrice.getText().trim());
 		java.sql.Date sqlDate = new java.sql.Date(formatter.parse(textFieldForImportedDate.getText().trim()).getTime());
-		Supplier supplier = supplierService.findById(comboBoxForSupplier.getSelectedItem().toString());
+		Optional<Supplier> supplier = supplierService.getById(comboBoxForSupplier.getSelectedItem().toString());
 		
 		return new Device(id, name, quantity, price, sqlDate, supplier);
 		

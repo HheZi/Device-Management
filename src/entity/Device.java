@@ -1,6 +1,7 @@
 package entity;
 
 import java.sql.Date;
+import java.util.Optional;
 
 public class Device {
 	private String id;
@@ -8,11 +9,11 @@ public class Device {
 	private int quantity;
 	private float price;
 	private Date imported_date;
-	private Supplier supplier;
+	private Optional<Supplier> supplier;
 	
 	
 	 public Device(String id, String name, int quantity, 
-	            float price, Date imported_date, Supplier supplier) {
+	            float price, Date imported_date, Optional<Supplier> supplier) {
 	        this.id = id;
 	        this.name = name;
 	        this.quantity = quantity;
@@ -63,9 +64,9 @@ public class Device {
 	    }
 
 	    public Supplier getSupplier() {
-	        return supplier;
+	        return supplier.get();
 	    }
-	    public void setSupplier(Supplier supplier) {
+	    public void setSupplier(Optional<Supplier> supplier) {
 	        this.supplier = supplier;
 	    }
 	}

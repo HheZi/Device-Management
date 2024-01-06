@@ -4,23 +4,36 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConnectionManager {
-	private static String url = "db.url";
-	private static String username = "db.name";
-	private static String password = "db.password";
+public final class ConnectionManager {
 	
-	private static Connection conn = null;
+	private static final ConnectionManager CONNECTION_MANAGER = new ConnectionManager();
 	
-	public static Connection getConnection() {
+	private static final String url = "db.url";
+	private static final String username = "db.name";
+	private static final String password = "db.password";
+	private static final String driver = "db.driver";
+	
+	static {
 		try {
-			Class.forName("org.postgresql.Driver");
-			conn = DriverManager.getConnection(PropertiesUtil.get(url), PropertiesUtil.get(username), PropertiesUtil.get(password));
+			Class.forName(PropertiesUtil.get(driver));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static ConnectionManager getInstance() {
+		return CONNECTION_MANAGER;
+	}
+	
+	private ConnectionManager() {}
+	
+	public Connection getConnection() {
+		try {
+			return DriverManager.getConnection(PropertiesUtil.get(url), PropertiesUtil.get(username), PropertiesUtil.get(password));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return conn;
+		return null;
 	}
 
 }

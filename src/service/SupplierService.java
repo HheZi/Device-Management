@@ -14,43 +14,28 @@ import entity.Supplier;
 import sqlmanager.ConnectionManager;
 
 public class SupplierService implements DAO<Supplier>{
-
+	private final ConnectionManager connectionManager = ConnectionManager.getInstance();
+	private static final SupplierService INSTANCE = new SupplierService();
+	
+	private SupplierService() {}
+	
+	public static SupplierService getInstance() {
+		return INSTANCE;
+	}
+	
 	@Override
-	public Optional<Supplier> get(String id) {
-		return Optional.empty();
-	}
-	
-	public static Supplier findById(String id, Connection c) {
+	public Optional<Supplier> getById(String id) {
 		final String SQL = """
 				select id, name, address 
 				from manager.supplier where id = ?
 				""";
-		Supplier sup = null;
-		try(PreparedStatement stmt = c.prepareStatement(SQL);){
-			stmt.setString(1, id);
-			try(ResultSet res = stmt.executeQuery();){
-				if(res.next()) {
-					sup = new Supplier(res.getString("id"), res.getString("name"), res.getString("address"));
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return sup;
-	}
-	
-	public Supplier findById(String id) {
-		final String SQL = """
-				select id, name, address 
-				from manager.supplier where id = ?
-				""";
-		Supplier sup = null;
-		try(Connection c = ConnectionManager.getConnection();
+		Optional<Supplier> sup = null;
+		try(Connection c = connectionManager.getConnection();
 			PreparedStatement stmt = c.prepareStatement(SQL);){
 			stmt.setString(1, id);
 			try(ResultSet res = stmt.executeQuery();){
 				if(res.next()) {
-					sup = new Supplier(res.getString("id"), res.getString("name"), res.getString("address"));
+					sup = Optional.of(new Supplier(res.getString("id"), res.getString("name"), res.getString("address")));
 				}
 			}
 		} catch (SQLException e) {
@@ -64,7 +49,7 @@ public class SupplierService implements DAO<Supplier>{
 				select id, name, address 
 				from manager.supplier where id = ?
 				""";
-		try(Connection c = ConnectionManager.getConnection();
+		try(Connection c = connectionManager.getConnection();
 			PreparedStatement stmt = c.prepareStatement(SQL);){
 			stmt.setString(1, id);
 			try(ResultSet res = stmt.executeQuery();){
@@ -81,7 +66,7 @@ public class SupplierService implements DAO<Supplier>{
 				""";
 		List<Supplier> list = new ArrayList<Supplier>();
 		
-		try(Connection c = ConnectionManager.getConnection();
+		try(Connection c = connectionManager.getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet res = stmt.executeQuery(SQL);){
 			while(res.next()) {
@@ -99,7 +84,7 @@ public class SupplierService implements DAO<Supplier>{
 				select id from manager.supplier order by id
 				""";
 		Vector<String> vector = new Vector<String> ();
-		try(Connection c = ConnectionManager.getConnection();
+		try(Connection c = connectionManager.getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet res = stmt.executeQuery(SQL);){
 			while(res.next()) {
@@ -116,7 +101,7 @@ public class SupplierService implements DAO<Supplier>{
 		final String SQL = """
 				insert into manager.supplier values (?,?,?)
 				""";
-		try(Connection c = ConnectionManager.getConnection();
+		try(Connection c = connectionManager.getConnection();
 			PreparedStatement stmt = c.prepareStatement(SQL)){
 			stmt.setString(1, supplier.getId());
 			stmt.setString(2, supplier.getName());
@@ -133,7 +118,7 @@ public class SupplierService implements DAO<Supplier>{
 				set name = ?, address = ?
 				where id = ?
 				""";
-		try(Connection c = ConnectionManager.getConnection();
+		try(Connection c = connectionManager.getConnection();
 			PreparedStatement stmt = c.prepareStatement(SQL);){
 			stmt.setString(1, supplier.getName());
 			stmt.setString(2, supplier.getAddress());
@@ -151,7 +136,7 @@ public class SupplierService implements DAO<Supplier>{
 				delete from manager.supplier
 				where id = ? and name = ? and address = ?
 				""";
-		try(Connection c = ConnectionManager.getConnection();
+		try(Connection c = connectionManager.getConnection();
 			PreparedStatement stmt = c.prepareStatement(SQL);){
 			stmt.setString(1, supplier.getId());
 			stmt.setString(2, supplier.getName());
